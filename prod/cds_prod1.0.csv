@@ -1,0 +1,7 @@
+CDSSYS,CDS_PROD,,EN
+PRODUCT_ID,PRODUCT_DESC,CLASS_CODE
+GTS1470-1/A,Parent partnumber test1,CC
+GTS1476-1/B,Parent partnumber test2,CC
+GTS1470-1,Child one comp partnumber test1,CC
+GTS1470-2,Child 2 partnumber test1,CC
+GTS1476-1,Child one comp partnumber test2,CC
