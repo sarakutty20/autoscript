@@ -1,0 +1,58 @@
+create directory in oracle using sys as sysdba user 
+
+https://oracle-base.com/articles/10g/oracle-data-pump-10g
+
+Getting Started
+
+For the examples to work we must first unlock the SCOTT account and create a directory object it can access. The directory object is only a pointer to a physical directory, creating it does not actually create the physical directory on the file system of the database server.
+
+CONN / AS SYSDBA
+ALTER USER scott IDENTIFIED BY tiger ACCOUNT UNLOCK;
+
+CREATE OR REPLACE DIRECTORY test_dir AS '/u01/app/oracle/oradata/';
+GRANT READ, WRITE ON DIRECTORY test_dir TO scott;
+Existing directories can be queried using the ALL_DIRECTORIES view.
+
+ Data Pump is a server-based technology, so it typically deals with directory objects pointing to physical directories on the database server. It does not write to the local file system on your client PC.
+Table Exports/Imports
+
+The TABLES parameter is used to specify the tables that are to be exported. The following is an example of the table export and import syntax.
+
+expdp scott/tiger@db10g tables=EMP,DEPT directory=TEST_DIR dumpfile=EMP_DEPT.dmp logfile=expdpEMP_DEPT.log
+
+impdp scott/tiger@db10g tables=EMP,DEPT directory=TEST_DIR dumpfile=EMP_DEPT.dmp logfile=impdpEMP_DEPT.log
+For example output files see expdpEMP_DEPT.log and impdpEMP_DEPT.log.
+
+The TABLE_EXISTS_ACTION=APPEND parameter allows data to be imported into existing tables.
+
+Schema Exports/Imports
+
+The OWNER parameter of exp has been replaced by the SCHEMAS parameter which is used to specify the schemas to be exported. The following is an example of the schema export and import syntax.
+
+expdp scott/tiger@db10g schemas=SCOTT directory=TEST_DIR dumpfile=SCOTT.dmp logfile=expdpSCOTT.log
+
+impdp scott/tiger@db10g schemas=SCOTT directory=TEST_DIR dumpfile=SCOTT.dmp logfile=impdpSCOTT.log
+For example output files see expdpSCOTT.log and impdpSCOTT.log.
+
+Database Exports/Imports
+
+The FULL parameter indicates that a complete database export is required. The following is an example of the full database export and import syntax.
+
+expdp system/password@db10g full=Y directory=TEST_DIR dumpfile=DB10G.dmp logfile=expdpDB10G.log
+
+impdp system/password@db10g full=Y directory=TEST_DIR dumpfile=DB10G.dmp logfile=impdpDB10G.log
+For an example output file see expdpDB10G.log.
+
+INCLUDE and EXCLUDE
+
+The INCLUDE and EXCLUDE parameters can be used to limit the export/import to specific objects. When the INCLUDE parameter is used, only those objects specified by it will be included in the export/import. When the EXCLUDE parameter is used, all objects except those specified by it will be included in the export/import. The two parameters are mutually exclusive, so use the parameter that requires the least entries to give you the result you require. The basic syntax for both parameters is the same.
+
+INCLUDE=object_type[:name_clause] [, ...]
+EXCLUDE=object_type[:name_clause] [, ...]
+The following code shows how they can be used as command line parameters.
+
+expdp scott/tiger@db10g schemas=SCOTT include=TABLE:"IN ('EMP', 'DEPT')" directory=TEST_DIR dumpfile=SCOTT.dmp logfile=expdpSCOTT.log
+
+expdp scott/tiger@db10g schemas=SCOTT exclude=TABLE:"= 'BONUS'" directory=TEST_DIR dumpfile=SCOTT.dmp logfile=expdpSCOTT.log
+
+expdp maximo/maximo@maxdb76 schemas=maximo directory=MAXIMO_DIR dumpfile=maxdevexp19082016.dmp logfile=explogmaxdev19082016.log
